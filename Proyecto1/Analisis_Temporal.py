@@ -12,6 +12,7 @@ Fecha: Marzo 2022
 """
 
 # Librerías
+from scipy import fft
 import process_data
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,9 +20,9 @@ import matplotlib.pyplot as plt
 #%% Lectura del dataset
 
 FS = 500 # Frecuencia de muestre: 500Hz
-T = 2    # Tiempo total de cada registro: 2 segundos
+T = 3   # Tiempo total de cada registro: 3 segundos
 
-folder = 'dataset_figuras' # Carpeta donde se almacenan los .csv
+folder = 'dataset_sinpelota' # Carpeta donde se almacenan los .csv
 
 x, y, z, classmap = process_data.process_data(FS, T, folder)
 
@@ -30,22 +31,28 @@ x, y, z, classmap = process_data.process_data(FS, T, folder)
 ts = 1 / FS                     # tiempo de muestreo
 N = FS*T                        # número de muestras en cada regsitro
 t = np.linspace(0, N * ts, N)   # vector de tiempos
+fft = fft.fftfreq(N , d = 1/FS) # vector de frecuencias
 
 # Se crea un arreglo de gráficas, con tres columnas de gráficas 
 # (correspondientes a cada eje) y tantos renglones como gesto distintos.
 fig, axes = plt.subplots(len(classmap), 3, figsize=(20, 20))
 fig.subplots_adjust(hspace=0.5)
 
-# Se recorren y grafican todos los registros
+# Se recorren, se calcula la fft y grafican todos los registros
 trial_num = 0
+
 for gesture_name in classmap:                           # Se recorre cada gesto
     for capture in range(int(len(x))):                  # Se recorre cada renglón de las matrices
         if (x[capture, N] == gesture_name):             # Si en el último elemento se detecta la etiqueta correspondiente
             # Se grafica la señal en los tres ejes
+            
+            
             axes[gesture_name][0].plot(t, x[capture, 0:N], label="Trial {}".format(trial_num))
             axes[gesture_name][1].plot(t, y[capture, 0:N], label="Trial {}".format(trial_num))
             axes[gesture_name][2].plot(t, z[capture, 0:N], label="Trial {}".format(trial_num))
             trial_num = trial_num + 1
+
+
 
 # Se le da formato a los ejes de cada gráfica
     axes[gesture_name][0].set_title(classmap[gesture_name] + " (Aceleración X)")

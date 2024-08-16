@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 FS = 500 # Frecuencia de muestre: 500Hz
 T = 3    # Tiempo total de cada registro: 3 segundos
 
-folder = 'dataset_sinpelota' # Carpeta donde se almacenan los .csv
+folder = 'dataset' # Carpeta donde se almacenan los .csv
 
 x, y, z, classmap = process_data.process_data(FS, T, folder)
 
@@ -63,11 +63,10 @@ for gesture_name in classmap:                           # Se recorre cada gesto
             FS_filtro_2 = FS_filtro/2
             
            
-            amplitudx_aux = np.max ( senial_x_fft )
+            amplitudx_aux = np.max ( senial_x_fft [np.where (fx >= FS_filtro_2)] )
             fx_aux = fx [np.argmax( senial_x_fft [np.where (fx >= FS_filtro_2)])] + FS_filtro_2
             if (amplitudx_aux > amplitudMax_x ):
                 amplitudMax_x = amplitudx_aux 
-            if (fx_aux > fxMax):
                 fxMax = fx_aux
             valorFREC65 = senial_x_fft [np.where(fx == 65)]
                 
@@ -75,22 +74,20 @@ for gesture_name in classmap:                           # Se recorre cada gesto
             fy_aux = fy [np.argmax( senial_y_fft [np.where (fy >= FS_filtro_2)])] + FS_filtro_2
             if (amplitudy_aux > amplitudMax_y ):
                 amplitudMax_y = amplitudy_aux 
-            if (fy_aux > fyMax):
                 fyMax = fy_aux
                 
                 
             amplitudz_aux = np.max ( senial_z_fft [np.where (fz >= FS_filtro_2)])
             fz_aux = fz [np.argmax( senial_z_fft [np.where (fz >= FS_filtro_2)])] + FS_filtro_2
             if (amplitudz_aux > amplitudMax_z ):
-                amplitudMax_z = amplitudz_aux 
-            if (fz_aux > fzMax):
-                fzMax = fz_aux
+                amplitudMax_z = amplitudz_aux
+                fzMax = fz_aux 
         
             
             # Se grafica la señal en los tres ejes
-            axes[gesture_name][0].plot(fx[0:75], senial_x_fft[0:75], label="Trial {}".format(trial_num))
-            axes[gesture_name][1].plot(fy[0:75], senial_y_fft[0:75], label="Trial {}".format(trial_num))
-            axes[gesture_name][2].plot(fz[0:75], senial_z_fft[0:75], label="Trial {}".format(trial_num))
+            axes[gesture_name][0].plot(fx, senial_x_fft, label="Trial {}".format(trial_num))
+            axes[gesture_name][1].plot(fy, senial_y_fft, label="Trial {}".format(trial_num))
+            axes[gesture_name][2].plot(fz[0:300], senial_z_fft[0:300], label="Trial {}".format(trial_num))
             trial_num = trial_num + 1
     
     
@@ -100,19 +97,22 @@ for gesture_name in classmap:                           # Se recorre cada gesto
     axes[gesture_name][0].legend(fontsize=6, loc='upper right');
     axes[gesture_name][0].set_xlabel('Frecuencia [Hz]', fontsize=10)
     axes[gesture_name][0].set_ylabel('Voltaje [V]', fontsize=10)
+    axes[gesture_name][0].set_ylim(0, 0.15)
     
     axes[gesture_name][1].set_title(classmap[gesture_name] + " (Aceleración Y)")
     axes[gesture_name][1].grid()
     axes[gesture_name][1].legend(fontsize=6, loc='upper right');
     axes[gesture_name][1].set_xlabel('Frecuencia [Hz]', fontsize=10)
     axes[gesture_name][1].set_ylabel('Voltaje [V]', fontsize=10)
+    axes[gesture_name][1].set_ylim(0, 0.15)
     
     axes[gesture_name][2].set_title(classmap[gesture_name] + " (Aceleración Z)")
     axes[gesture_name][2].grid()
     axes[gesture_name][2].legend(fontsize=6, loc='upper right');
     axes[gesture_name][2].set_xlabel('Frecuencia [Hz]', fontsize=10)
     axes[gesture_name][2].set_ylabel('Voltaje [V]', fontsize=10)
-
+    axes[gesture_name][2].set_ylim(0, 0.15)
+    
 plt.tight_layout()
 plt.show()
 

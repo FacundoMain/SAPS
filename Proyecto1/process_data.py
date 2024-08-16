@@ -14,6 +14,7 @@ Fecha: Marzo 2022
 
 
 import numpy as np
+from scipy import fft
 from glob import glob
 from os.path import basename
 
@@ -81,3 +82,23 @@ def process_data(fs, tiempo, folder):
                     y_axis[capture, int(muestras)] = i
                     z_axis[capture, int(muestras)] = i
     return x_axis, y_axis, z_axis, classmap                
+
+
+def calculo_fft (senial , fs):
+    
+    N = len(senial)
+    freq = fft.fftfreq(N, d = 1/fs)
+    senial_fft = fft.fft(senial)    # se calcula la transformada rápida de Fourier
+
+    # El espectro es simétrico, nos quedamos solo con el semieje positivo
+    f = freq[np.where(freq >= 0)]      
+    senial_fft = senial_fft[np.where(freq >= 0)]
+
+    # Se calcula la magnitud del espectro
+    senial_fft_mod = np.abs(senial_fft) / N     # Respetando la relación de Parseval
+    # Al haberse descartado la mitad del espectro, para conservar la energía 
+    # original de la señal, se debe multiplicar la mitad restante por dos (excepto
+    # en 0 y fm/2)    
+    senial_fft_mod[1:len(senial_fft_mod-1)] = 2 * senial_fft_mod[1:len(senial_fft_mod-1)]
+    
+    return f, senial_fft_mod
