@@ -122,3 +122,4 @@ print ("Amplitud MAX en Z: ", amplitudMax_z )
 print ("Frecuencia MAX en X: ", fxMax)
 print ("Frecuencia MAX en Y: " , fyMax)
 print ("Frecuencia max en Z: ", fzMax)
+
